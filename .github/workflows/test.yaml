@@ -9,4 +9,4 @@ jobs:
 
     steps:
     - run: nproc
-    - run: free -m
+    - run: free -h
