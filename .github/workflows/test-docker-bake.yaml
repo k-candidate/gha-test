@@ -1,0 +1,58 @@
+name: Test Docker Bake
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version (auto-filled on release)'
+        required: false
+        default: ''
+  release:
+    types: [published]
+
+jobs:
+  determine-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set-version.outputs.version }}
+    steps:
+      - id: set-version
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            echo "version=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "version=${{ github.event.inputs.version || 'manually-triggered' }}" >> $GITHUB_OUTPUT
+          fi
+
+  build-images-multi-target-mixed-arch:
+    needs: determine-version
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@main
+    secrets:
+      dockerhub_username: ${{ secrets.MY_REGISTRY_USER }}
+      dockerhub_token: ${{ secrets.MY_REGISTRY_TOKEN }}
+    with:
+      bake-file: ./testdir/testsubdir/docker-bake-multi-target-mixed-arch.hcl
+      version: ${{ needs.determine-version.outputs.version }}
+
+  build-images-single-target-multi-arch:
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@main
+    secrets:
+      dockerhub_username: ${{ secrets.MY_REGISTRY_USER }}
+      dockerhub_token: ${{ secrets.MY_REGISTRY_TOKEN }}
+
+  build-images-multi-target-single-arch:
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@main
+    with:
+      bake-file: docker-bake-multi-target-single-arch.hcl
+      group: somegroup
+    secrets:
+      dockerhub_username: ${{ secrets.MY_REGISTRY_USER }}
+      dockerhub_token: ${{ secrets.MY_REGISTRY_TOKEN }}
+
+  build-images-single-target-single-arch:
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@main
+    with:
+      bake-file: docker-bake-single-target-single-arch.hcl
+    secrets:
+      dockerhub_username: ${{ secrets.MY_REGISTRY_USER }}
+      dockerhub_token: ${{ secrets.MY_REGISTRY_TOKEN }}
