@@ -1,0 +1,19 @@
+name: build
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-images:
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@bake
+    with:
+      bake_file: ./docker-bake.hcl      # optional if at root
+      source: .                         # optional
+      export_mode: push                 # or load / none
+      registry: docker.io               # or ghcr.io etc.
+      # targets: web,api                # optional
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.MY_REGISTRY_USER }}
+      REGISTRY_PASSWORD: ${{ secrets.MY_REGISTRY_TOKEN }}
