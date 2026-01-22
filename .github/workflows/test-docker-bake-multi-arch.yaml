@@ -1,0 +1,11 @@
+name: build-multi-arch
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-images:
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@bake
+    with:
+      bake_file: docker-bake-multi.hcl
+    secrets: inherit
