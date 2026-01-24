@@ -5,7 +5,7 @@ on:
 
 jobs:
   build-images:
-    uses: k-candidate/gha-workflows/.github/workflows/docker-bake-3.yaml@bake
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake-4.yaml@bake
     secrets:
       REGISTRY_USERNAME: ${{ secrets.MY_REGISTRY_USER }}
       REGISTRY_PASSWORD: ${{ secrets.MY_REGISTRY_TOKEN }}
