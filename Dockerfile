@@ -4,4 +4,4 @@ FROM alpine:3.20
 # Just for demo
 RUN echo "Hello from docker-bake test image"
 
-CMD ["sh", "-c", "echo 'Container started from docker-bake test image' && sleep 60"]
+CMD ["sh", "-c", "echo 'Container started from docker-bake test image' && uname -a && sleep 60"]

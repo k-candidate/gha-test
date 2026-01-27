@@ -9,7 +9,7 @@ target "test-image" {
 
   # Image name/tag
   tags = [
-    "docker.io/kcandidate/gha-test:v50",
+    "docker.io/kcandidate/gha-test:v51",
   ]
 
   # Single platform for now
