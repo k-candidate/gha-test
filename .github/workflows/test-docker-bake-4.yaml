@@ -9,4 +9,5 @@ jobs:
     secrets:
       dockerhub_username: ${{ secrets.MY_REGISTRY_USER }}
       dockerhub_token: ${{ secrets.MY_REGISTRY_TOKEN }}
+    with:
       bake-file: ./testdir/testsubdir/docker-bake.hcl
