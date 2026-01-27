@@ -14,7 +14,8 @@ target "test-image" {
 
   # Single platform for now
   platforms = [
-    "linux/amd64"
+    "linux/amd64",
+    "linux/arm64"
   ]
 
   # Example labels just to exercise metadata
