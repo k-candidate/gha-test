@@ -42,7 +42,7 @@ target "test-image-2" {
   ]
 }
 
-target "test-image-2" {
+target "test-image-3" {
   context = "."
   dockerfile = "Dockerfile3"
   tags = [
