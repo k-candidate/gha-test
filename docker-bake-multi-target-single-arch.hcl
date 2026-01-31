@@ -16,7 +16,7 @@ target "test-image-2" {
   context    = "."
   dockerfile = "Dockerfile"
   tags = ["docker.io/kcandidate/test-image-2:multi-target-single-arch-v8"]
-  platforms = ["linux/amd64"]
+  platforms = ["linux/arm64"]
   labels = {
     "org.opencontainers.image.title" = "gha-test multi-arch"
   }
