@@ -1,4 +1,4 @@
-name: Test Docker Bake 6
+name: Test Docker Bake 7
 
 on:
   workflow_dispatch:
