@@ -2,6 +2,7 @@
 FROM alpine:3.20
 
 ARG EXAMPLE_ARG
+ENV EXAMPLE_ARG=${EXAMPLE_ARG}
 
 # Just for demo
 RUN echo "Hello from docker-bake test image"
