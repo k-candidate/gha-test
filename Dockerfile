@@ -6,4 +6,4 @@ ARG EXAMPLE_ARG
 # Just for demo
 RUN echo "Hello from docker-bake test image"
 
-CMD ["sh", "-c", "echo 'Container started from docker-bake test image showing $EXAMPLE_ARG' && uname -a && sleep 10"]
+CMD ["sh", "-c", "echo 'Container started from docker-bake test image showing ${EXAMPLE_ARG}' && uname -a && sleep 10"]
