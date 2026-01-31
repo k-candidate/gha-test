@@ -1,4 +1,4 @@
-name: build-multi-arch
+name: build-multi-target-single-arch
 
 on:
   workflow_dispatch:
@@ -7,7 +7,7 @@ jobs:
   build-images:
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@bake
     with:
-      bake_file: docker-bake-multi.hcl
+      bake_file: docker-bake-multi-target-single-arch.hcl
     secrets:
       REGISTRY_USERNAME: ${{ secrets.MY_REGISTRY_USER }}
       REGISTRY_PASSWORD: ${{ secrets.MY_REGISTRY_TOKEN }}

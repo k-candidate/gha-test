@@ -1,4 +1,4 @@
-name: build-single-arch
+name: Test Docker Bake 7
 
 on:
   workflow_dispatch:
@@ -6,8 +6,8 @@ on:
 jobs:
   build-images:
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake-8.yaml@bake
-    with:
-      bake-file: docker-bake-single.hcl
     secrets:
       dockerhub_username: ${{ secrets.MY_REGISTRY_USER }}
       dockerhub_token: ${{ secrets.MY_REGISTRY_TOKEN }}
+    with:
+      bake-file: ./testdir/testsubdir/docker-bake-8.hcl
