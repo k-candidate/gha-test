@@ -5,7 +5,7 @@ on:
 
 jobs:
   build-images:
-    uses: k-candidate/gha-workflows/.github/workflows/docker-bake-5.yaml@bake
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake-6.yaml@bake
     with:
       bake-file: docker-bake-single.hcl
     secrets:
