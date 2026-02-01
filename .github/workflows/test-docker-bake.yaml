@@ -5,7 +5,7 @@ on:
     inputs:
       version:
         description: 'Version (auto-filled on release)'
-        required: true
+        required: false
         default: ''
   release:
     types: [published]
