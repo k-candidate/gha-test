@@ -30,7 +30,7 @@ jobs:
   build-images-single-target-single-arch:
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake-9.yaml@bake
     with:
-      bake-file: docker-bake-single.hcl
+      bake-file: docker-bake-single-target-single-arch.hcl
     secrets:
       dockerhub_username: ${{ secrets.MY_REGISTRY_USER }}
       dockerhub_token: ${{ secrets.MY_REGISTRY_TOKEN }}
