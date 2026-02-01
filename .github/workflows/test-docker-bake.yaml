@@ -2,24 +2,27 @@ name: Test Docker Bake
 
 on:
   workflow_dispatch:
+  release:
+    types: [published]
 
 jobs:
   build-images-multi-target-mixed-arch:
-    uses: k-candidate/gha-workflows/.github/workflows/docker-bake-9.yaml@bake
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake-10.yaml@bake
     secrets:
       dockerhub_username: ${{ secrets.MY_REGISTRY_USER }}
       dockerhub_token: ${{ secrets.MY_REGISTRY_TOKEN }}
     with:
       bake-file: ./testdir/testsubdir/docker-bake-multi-target-mixed-arch.hcl
+      version: ${{ github.event.release.tag_name}}
 
   build-images-single-target-multi-arch:
-    uses: k-candidate/gha-workflows/.github/workflows/docker-bake-9.yaml@bake
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake-10.yaml@bake
     secrets:
       dockerhub_username: ${{ secrets.MY_REGISTRY_USER }}
       dockerhub_token: ${{ secrets.MY_REGISTRY_TOKEN }}
 
   build-images-multi-target-single-arch:
-    uses: k-candidate/gha-workflows/.github/workflows/docker-bake-9.yaml@bake
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake-10.yaml@bake
     with:
       bake-file: docker-bake-multi-target-single-arch.hcl
       group: somegroup
@@ -28,7 +31,7 @@ jobs:
       dockerhub_token: ${{ secrets.MY_REGISTRY_TOKEN }}
 
   build-images-single-target-single-arch:
-    uses: k-candidate/gha-workflows/.github/workflows/docker-bake-9.yaml@bake
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake-10.yaml@bake
     with:
       bake-file: docker-bake-single-target-single-arch.hcl
     secrets:
