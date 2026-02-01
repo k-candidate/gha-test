@@ -1,4 +1,4 @@
-group "default" {
+group "somegroup" {
   targets = ["test-image-1", "test-image-2", "test-image-3"]
 }
 

@@ -1,17 +1,36 @@
-name: build
+name: Test Docker Bake
 
 on:
   workflow_dispatch:
 
 jobs:
-  build-images:
-    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@bake
-    with:
-      bake_file: ./docker-bake.hcl      # optional if at root
-      source: .                         # optional
-      export_mode: push                 # or load / none
-      registry: docker.io               # or ghcr.io etc.
-      # targets: web,api                # optional
+  build-images-multi-target-mixed-arch:
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake-9.yaml@bake
     secrets:
-      REGISTRY_USERNAME: ${{ secrets.MY_REGISTRY_USER }}
-      REGISTRY_PASSWORD: ${{ secrets.MY_REGISTRY_TOKEN }}
+      dockerhub_username: ${{ secrets.MY_REGISTRY_USER }}
+      dockerhub_token: ${{ secrets.MY_REGISTRY_TOKEN }}
+    with:
+      bake-file: ./testdir/testsubdir/docker-bake-multi-target-mixed-arch.hcl
+
+  build-images-single-target-multi-arch:
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake-9.yaml@bake
+    secrets:
+      dockerhub_username: ${{ secrets.MY_REGISTRY_USER }}
+      dockerhub_token: ${{ secrets.MY_REGISTRY_TOKEN }}
+
+  build-images-multi-target-single-arch:
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake-9.yaml@bake
+    with:
+      bake-file: docker-bake-multi-target-single-arch.hcl
+      group: somegroup
+    secrets:
+      dockerhub_username: ${{ secrets.MY_REGISTRY_USER }}
+      dockerhub_token: ${{ secrets.MY_REGISTRY_TOKEN }}
+
+  build-images-single-target-single-arch:
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake-9.yaml@bake
+    with:
+      bake-file: docker-bake-single.hcl
+    secrets:
+      dockerhub_username: ${{ secrets.MY_REGISTRY_USER }}
+      dockerhub_token: ${{ secrets.MY_REGISTRY_TOKEN }}
