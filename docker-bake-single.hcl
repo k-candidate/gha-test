@@ -5,7 +5,7 @@ group "default" {
 target "test-image" {
   context    = "."
   dockerfile = "Dockerfile"
-  tags = ["docker.io/kcandidate/gha-test:singlearch-v8"]
+  tags = ["docker.io/kcandidate/gha-test:singlearch-v9"]
   platforms = ["linux/amd64"]
   labels = {
     "org.opencontainers.image.title" = "gha-test single-arch"
