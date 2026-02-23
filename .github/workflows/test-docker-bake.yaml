@@ -34,23 +34,17 @@ jobs:
 
   build-images-single-target-multi-arch:
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@b2
-    secrets:
-      dockerhub_username: ${{ secrets.MY_REGISTRY_USER }}
-      dockerhub_token: ${{ secrets.MY_REGISTRY_TOKEN }}
+    secrets: inherit
 
   build-images-multi-target-single-arch:
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@b2
     with:
       bake-file: docker-bake-multi-target-single-arch.hcl
       group: somegroup
-    secrets:
-      dockerhub_username: ${{ secrets.MY_REGISTRY_USER }}
-      dockerhub_token: ${{ secrets.MY_REGISTRY_TOKEN }}
+    secrets: inherit
 
   build-images-single-target-single-arch:
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@b2
     with:
       bake-file: docker-bake-single-target-single-arch.hcl
-    secrets:
-      dockerhub_username: ${{ secrets.MY_REGISTRY_USER }}
-      dockerhub_token: ${{ secrets.MY_REGISTRY_TOKEN }}
+    secrets: inherit
