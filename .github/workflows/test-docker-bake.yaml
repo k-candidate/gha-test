@@ -26,7 +26,7 @@ jobs:
 
   build-images-multi-target-mixed-arch:
     needs: determine-version
-    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@main
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@docker-bake-sec
     secrets:
       dockerhub_username: ${{ secrets.MY_REGISTRY_USER }}
       dockerhub_token: ${{ secrets.MY_REGISTRY_TOKEN }}
@@ -35,13 +35,13 @@ jobs:
       version: ${{ needs.determine-version.outputs.version }}
 
   build-images-single-target-multi-arch:
-    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@main
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@docker-bake-sec
     secrets:
       dockerhub_username: ${{ secrets.MY_REGISTRY_USER }}
       dockerhub_token: ${{ secrets.MY_REGISTRY_TOKEN }}
 
   build-images-multi-target-single-arch:
-    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@main
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@docker-bake-sec
     with:
       bake-file: docker-bake-multi-target-single-arch.hcl
       group: somegroup
@@ -50,7 +50,7 @@ jobs:
       dockerhub_token: ${{ secrets.MY_REGISTRY_TOKEN }}
 
   build-images-single-target-single-arch:
-    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@main
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@docker-bake-sec
     with:
       bake-file: docker-bake-single-target-single-arch.hcl
     secrets:

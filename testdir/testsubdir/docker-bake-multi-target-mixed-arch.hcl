@@ -13,8 +13,8 @@ target "test-image-1" {
 
   # Image name/tag
   tags = [
-    "docker.io/kcandidate/gha-test:subdir-${VERSION}",
-    "docker.io/kcandidate/gha-test:latest-subdir-v10"
+    "docker.io/kcandidate/gha-test:subdir-${VERSION}-11",
+    "docker.io/kcandidate/gha-test:latest-subdir-v11"
   ]
 
   # Single platform for now
@@ -39,7 +39,7 @@ target "test-image-2" {
   context = "testdir/testsubdir"
   dockerfile = "Dockerfile2"
   tags = [
-    "docker.io/kcandidate/test-image-2:v10"
+    "docker.io/kcandidate/test-image-2:v11"
   ]
   platforms = [
     "linux/amd64"
@@ -50,7 +50,7 @@ target "test-image-3" {
   context = "testdir/testsubdir"
   dockerfile = "Dockerfile3"
   tags = [
-    "docker.io/kcandidate/test-image-3:v10"
+    "docker.io/kcandidate/test-image-3:v11"
   ]
   platforms = [
     "linux/arm64"
