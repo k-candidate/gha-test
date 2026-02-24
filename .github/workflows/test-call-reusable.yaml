@@ -6,7 +6,4 @@ on:
 jobs:
   call-reusable:
     uses: k-candidate/gha-workflows/.github/workflows/test-reusable.yaml@main
-    secrets:
-      caller_secret: ${{ secrets.TEST_CALLER_SECRET }}
-      # Note: NOT passing TEST_SECRET from environment
-      # The reusable workflow should get it from its own environment
+    # NO secrets passed at all
