@@ -1,4 +1,4 @@
-name: Test Call Reusable Workflow
+name: Test Call Reusable Workflow that has Env Secret
 
 on:
   workflow_dispatch:
