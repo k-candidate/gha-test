@@ -8,10 +8,6 @@ group "secret-test" {
   targets = ["test-image-with-secret"]
 }
 
-variable "BUILD_SECRETS_DIR" {
-  default = ""
-}
-
 target "test-image" {
   # Use the local Dockerfile in this repo
   context    = "."
@@ -48,17 +44,17 @@ target "test-image-with-secret" {
   tags = ["docker.io/kcandidate/gha-test:build-secret-test"]
   platforms = ["linux/amd64"]
 
-  # The reusable workflow writes the JSON bundle's values to this temporary
-  # directory. BuildKit exposes them only to RUN instructions that explicitly
-  # mount the corresponding secrets.
+  # The reusable workflow turns bundle keys into BUILD_SECRET_<KEY>
+  # environment variables. BuildKit exposes them only to RUN instructions
+  # that explicitly mount the corresponding secrets.
   secret = [
     {
       id  = "test_build_secret_1"
-      src = "${BUILD_SECRETS_DIR}/test_build_secret_1"
+      env = "BUILD_SECRET_TEST_BUILD_SECRET_1"
     },
     {
       id  = "test_build_secret_2"
-      src = "${BUILD_SECRETS_DIR}/test_build_secret_2"
+      env = "BUILD_SECRET_TEST_BUILD_SECRET_2"
     }
   ]
 }
