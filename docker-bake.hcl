@@ -2,6 +2,16 @@ group "default" {
   targets = ["test-image"]
 }
 
+# Kept separate from the default group so existing builds do not require a
+# build-time secret.
+group "secret-test" {
+  targets = ["test-image-with-secret"]
+}
+
+variable "BUILD_SECRETS_DIR" {
+  default = ""
+}
+
 target "test-image" {
   # Use the local Dockerfile in this repo
   context    = "."
@@ -29,4 +39,26 @@ target "test-image" {
   args = {
     "EXAMPLE_ARG" = "example-value"
   }
+}
+
+target "test-image-with-secret" {
+  context    = "."
+  dockerfile = "Dockerfile.secret"
+
+  tags = ["docker.io/kcandidate/gha-test:build-secret-test"]
+  platforms = ["linux/amd64"]
+
+  # The reusable workflow writes the JSON bundle's values to this temporary
+  # directory. BuildKit exposes them only to RUN instructions that explicitly
+  # mount the corresponding secrets.
+  secret = [
+    {
+      id  = "test_build_secret_1"
+      src = "${BUILD_SECRETS_DIR}/test_build_secret_1"
+    },
+    {
+      id  = "test_build_secret_2"
+      src = "${BUILD_SECRETS_DIR}/test_build_secret_2"
+    }
+  ]
 }
