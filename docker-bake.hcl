@@ -49,11 +49,11 @@ target "test-image-with-secret" {
   # that explicitly mount the corresponding secrets.
   secret = [
     {
-      id  = "test_build_secret_1"
+      id  = "TEST_BUILD_SECRET1"
       env = "TEST_BUILD_SECRET1"
     },
     {
-      id  = "test_build_secret_2"
+      id  = "TEST_BUILD_SECRET2"
       env = "TEST_BUILD_SECRET2"
     }
   ]
