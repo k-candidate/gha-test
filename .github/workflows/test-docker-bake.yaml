@@ -53,4 +53,7 @@ jobs:
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@docker-secrets-handling
     with:
       group: secret-test
+      secret-names: |
+        TEST_BUILD_SECRET1
+        TEST_BUILD_SECRET2
     secrets: inherit

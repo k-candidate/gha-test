@@ -50,11 +50,11 @@ target "test-image-with-secret" {
   secret = [
     {
       id  = "test_build_secret_1"
-      env = "BUILD_SECRET_TEST_BUILD_SECRET_1"
+      env = "TEST_BUILD_SECRET1"
     },
     {
       id  = "test_build_secret_2"
-      env = "BUILD_SECRET_TEST_BUILD_SECRET_2"
+      env = "TEST_BUILD_SECRET2"
     }
   ]
 }
