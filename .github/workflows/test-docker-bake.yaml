@@ -26,31 +26,31 @@ jobs:
 
   build-images-multi-target-mixed-arch:
     needs: determine-version
-    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@docker-secrets-handling
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@main
     secrets: inherit
     with:
       bake-file: ./testdir/testsubdir/docker-bake-multi-target-mixed-arch.hcl
       version: ${{ needs.determine-version.outputs.version }}
 
   build-images-single-target-multi-arch:
-    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@docker-secrets-handling
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@main
     secrets: inherit
 
   build-images-multi-target-single-arch:
-    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@docker-secrets-handling
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@main
     with:
       bake-file: docker-bake-multi-target-single-arch.hcl
       group: somegroup
     secrets: inherit
 
   build-images-single-target-single-arch:
-    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@docker-secrets-handling
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@main
     with:
       bake-file: docker-bake-single-target-single-arch.hcl
     secrets: inherit
 
   build-image-with-secrets:
-    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@docker-secrets-handling
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@main
     with:
       group: secret-test
     secrets: inherit
