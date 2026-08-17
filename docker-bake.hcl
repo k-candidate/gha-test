@@ -38,9 +38,8 @@ target "test-image-with-secret" {
   tags = ["docker.io/kcandidate/gha-test:build-secret-test"]
   platforms = ["linux/amd64"]
 
-  # The reusable workflow turns bundle keys into BUILD_SECRET_<KEY>
-  # environment variables. BuildKit exposes them only to RUN instructions
-  # that explicitly mount the corresponding secrets.
+  # These secret names must match the GitHub Actions secret names and the
+  # Dockerfile secret mount IDs.
   secret = [
     {
       id  = "TEST_BUILD_SECRET1"
