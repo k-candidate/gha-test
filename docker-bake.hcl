@@ -1,11 +1,5 @@
 group "default" {
-  targets = ["test-image"]
-}
-
-# Kept separate from the default group so existing builds do not require a
-# build-time secret.
-group "secret-test" {
-  targets = ["test-image-with-secret"]
+  targets = ["test-image", "test-image-with-secret"]
 }
 
 target "test-image" {
