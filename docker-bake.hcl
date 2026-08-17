@@ -1,5 +1,5 @@
 group "default" {
-  targets = ["test-image"]
+  targets = ["test-image", "test-image-with-secret"]
 }
 
 target "test-image" {
@@ -29,4 +29,25 @@ target "test-image" {
   args = {
     "EXAMPLE_ARG" = "example-value"
   }
+}
+
+target "test-image-with-secret" {
+  context    = "."
+  dockerfile = "Dockerfile.secret"
+
+  tags = ["docker.io/kcandidate/gha-test:build-secret-test"]
+  platforms = ["linux/amd64"]
+
+  # These secret names must match the GitHub Actions secret names and the
+  # Dockerfile secret mount IDs.
+  secret = [
+    {
+      id  = "TEST_BUILD_SECRET1"
+      env = "TEST_BUILD_SECRET1"
+    },
+    {
+      id  = "TEST_BUILD_SECRET2"
+      env = "TEST_BUILD_SECRET2"
+    }
+  ]
 }
