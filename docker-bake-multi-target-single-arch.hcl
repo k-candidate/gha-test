@@ -2,10 +2,14 @@ group "somegroup" {
   targets = ["test-image-1", "test-image-2", "test-image-3"]
 }
 
+variable "VERSION" {
+  default = "1.0.0"
+}
+
 target "test-image-1" {
   context    = "."
   dockerfile = "Dockerfile"
-  tags = ["docker.io/kcandidate/gha-test:multi-target-single-arch-v10"]
+  tags = ["docker.io/kcandidate/gha-test-multi-single-arch:${VERSION}"]
   platforms = ["linux/amd64"]
   labels = {
     "org.opencontainers.image.title" = "gha-test multi-target single-arch target 1"
@@ -20,7 +24,7 @@ target "test-image-1" {
 target "test-image-2" {
   context    = "."
   dockerfile = "Dockerfile"
-  tags = ["docker.io/kcandidate/test-image-2:multi-target-single-arch-v10"]
+  tags = ["docker.io/kcandidate/test-image-2:${VERSION}"]
   platforms = ["linux/arm64"]
   labels = {
     "org.opencontainers.image.title" = "gha-test multi-target single-arch target 2"
@@ -35,7 +39,7 @@ target "test-image-2" {
 target "test-image-3" {
   context    = "."
   dockerfile = "Dockerfile"
-  tags = ["docker.io/kcandidate/test-image-3:multi-target-single-arch-v10"]
+  tags = ["docker.io/kcandidate/test-image-3:${VERSION}"]
   platforms = ["linux/amd64"]
   labels = {
     "org.opencontainers.image.title" = "gha-test multi-target single-arch target 3"

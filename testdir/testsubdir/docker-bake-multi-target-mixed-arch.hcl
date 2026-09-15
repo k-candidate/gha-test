@@ -3,7 +3,7 @@ group "default" {
 }
 
 variable "VERSION" {
-  default = "unknown"
+  default = "1.0.0"
 }
 
 target "test-image-1" {
@@ -13,7 +13,7 @@ target "test-image-1" {
 
   # Image name/tag
   tags = [
-    "docker.io/kcandidate/gha-test:subdir-${VERSION}",
+    "docker.io/kcandidate/gha-test-subdir:${VERSION}",
     "docker.io/kcandidate/gha-test:latest-subdir-v10"
   ]
 
@@ -49,7 +49,7 @@ target "test-image-2" {
   context = "testdir/testsubdir"
   dockerfile = "Dockerfile2"
   tags = [
-    "docker.io/kcandidate/test-image-2:v10"
+    "docker.io/kcandidate/test-image-2:${VERSION}"
   ]
   platforms = [
     "linux/amd64"
@@ -70,7 +70,7 @@ target "test-image-3" {
   context = "testdir/testsubdir"
   dockerfile = "Dockerfile3"
   tags = [
-    "docker.io/kcandidate/test-image-3:v10"
+    "docker.io/kcandidate/test-image-3:${VERSION}"
   ]
   platforms = [
     "linux/arm64"

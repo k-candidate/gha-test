@@ -1,9 +1,9 @@
 group "default" {
-  targets = ["test-image"]
+  targets = ["test-image", "test-image-with-secret"]
 }
 
-group "secret" {
-  targets = ["test-image-with-secret"]
+variable "VERSION" {
+  default = "1.0.0"
 }
 
 target "test-image" {
@@ -13,7 +13,7 @@ target "test-image" {
 
   # Image name/tag
   tags = [
-    "docker.io/kcandidate/gha-test:v10",
+    "docker.io/kcandidate/gha-test:${VERSION}",
     "docker.io/kcandidate/gha-test:latest"
   ]
 
@@ -49,7 +49,7 @@ target "test-image-with-secret" {
   context    = "."
   dockerfile = "Dockerfile.secret"
 
-  tags = ["docker.io/kcandidate/gha-test:build-secret-test"]
+  tags = ["docker.io/kcandidate/gha-test-secret:${VERSION}"]
   platforms = ["linux/amd64"]
 
   # These secret names must match the GitHub Actions secret names and the

@@ -2,10 +2,14 @@ group "default" {
   targets = ["test-image"]
 }
 
+variable "VERSION" {
+  default = "1.0.0"
+}
+
 target "test-image" {
   context    = "."
   dockerfile = "Dockerfile"
-  tags = ["docker.io/kcandidate/gha-test:singlearch-v10"]
+  tags = ["docker.io/kcandidate/gha-test-singlearch:${VERSION}"]
   platforms = ["linux/amd64"]
   labels = {
     "org.opencontainers.image.title" = "gha-test single-arch"
