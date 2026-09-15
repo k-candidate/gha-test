@@ -51,4 +51,6 @@ jobs:
 
   build-image-with-secrets:
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@annotations
+    with:
+      group: secret
     secrets: inherit

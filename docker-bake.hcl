@@ -1,5 +1,9 @@
 group "default" {
-  targets = ["test-image", "test-image-with-secret"]
+  targets = ["test-image"]
+}
+
+group "secret" {
+  targets = ["test-image-with-secret"]
 }
 
 target "test-image" {
