@@ -7,6 +7,14 @@ on:
         description: 'Version (auto-filled on release)'
         required: false
         default: ''
+      test-scope:
+        description: 'Run only the focused annotation scenarios, or every fixture'
+        required: false
+        type: choice
+        options:
+          - annotations
+          - all
+        default: annotations
   release:
     types: [published]
 
@@ -25,6 +33,7 @@ jobs:
           fi
 
   build-images-multi-target-mixed-arch:
+    if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' }}
     needs: determine-version
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@annotations
     secrets: inherit
@@ -33,10 +42,12 @@ jobs:
       version: ${{ needs.determine-version.outputs.version }}
 
   build-images-single-target-multi-arch:
+    if: ${{ github.event_name == 'release' || inputs.test-scope == 'annotations' || inputs.test-scope == 'all' }}
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@annotations
     secrets: inherit
 
   build-images-multi-target-single-arch:
+    if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' }}
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@annotations
     with:
       bake-file: docker-bake-multi-target-single-arch.hcl
@@ -44,12 +55,14 @@ jobs:
     secrets: inherit
 
   build-images-single-target-single-arch:
+    if: ${{ github.event_name == 'release' || inputs.test-scope == 'annotations' || inputs.test-scope == 'all' }}
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@annotations
     with:
       bake-file: docker-bake-single-target-single-arch.hcl
     secrets: inherit
 
   build-image-with-secrets:
+    if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' }}
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@annotations
     with:
       group: secret
