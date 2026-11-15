@@ -1,5 +1,5 @@
 # Simple test image
-FROM alpine:3.20
+FROM public.ecr.aws/docker/library/alpine:3.20
 
 ARG EXAMPLE_ARG
 ENV EXAMPLE_ARG=${EXAMPLE_ARG}
