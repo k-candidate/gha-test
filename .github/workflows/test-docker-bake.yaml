@@ -25,7 +25,7 @@ jobs:
           echo "version=1.0.${{ github.run_number }}" >> $GITHUB_OUTPUT
 
   build-images-multi-target-mixed-arch:
-    if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' }}
+    if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'annotations' }}
     needs: determine-version
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@annotations
     secrets: inherit
@@ -42,7 +42,7 @@ jobs:
       version: ${{ needs.determine-version.outputs.version }}
 
   build-images-multi-target-single-arch:
-    if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' }}
+    if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'annotations' }}
     needs: determine-version
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@annotations
     with:
@@ -61,9 +61,11 @@ jobs:
     secrets: inherit
 
   build-image-with-secrets:
-    if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' }}
+    if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'annotations' }}
     needs: determine-version
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@annotations
     with:
+      bake-file: docker-bake.hcl
+      group: secretgroup
       version: ${{ needs.determine-version.outputs.version }}
     secrets: inherit
