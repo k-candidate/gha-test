@@ -8,9 +8,9 @@ on:
         required: false
         type: choice
         options:
-          - annotations
           - all
-        default: annotations
+          - annotations
+        default: all
   release:
     types: [published]
 
@@ -61,11 +61,11 @@ jobs:
     secrets: inherit
 
   build-image-with-secrets:
-    if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'annotations' }}
+    if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' }}
     needs: determine-version
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@annotations
     with:
       bake-file: docker-bake.hcl
-      group: default
+      group: secretgroup
       version: ${{ needs.determine-version.outputs.version }}
     secrets: inherit

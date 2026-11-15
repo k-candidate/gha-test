@@ -1,5 +1,9 @@
 group "default" {
-  targets = ["test-image", "test-image-with-secret"]
+  targets = ["test-image"]
+}
+
+group "secretgroup" {
+  targets = ["test-image-with-secret"]
 }
 
 variable "VERSION" {
@@ -13,8 +17,7 @@ target "test-image" {
 
   # Image name/tag
   tags = [
-    "docker.io/kcandidate/gha-test:${VERSION}",
-    "docker.io/kcandidate/gha-test:latest"
+    "docker.io/kcandidate/gha-test:${VERSION}"
   ]
 
   # Multi-platform

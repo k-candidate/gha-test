@@ -24,7 +24,7 @@ target "test-image-1" {
 target "test-image-2" {
   context    = "."
   dockerfile = "Dockerfile"
-  tags = ["docker.io/kcandidate/test-image-2:${VERSION}"]
+  tags = ["docker.io/kcandidate/test-image-2:single-${VERSION}"]
   platforms = ["linux/arm64"]
   labels = {
     "org.opencontainers.image.title" = "gha-test multi-target single-arch target 2"
@@ -39,7 +39,7 @@ target "test-image-2" {
 target "test-image-3" {
   context    = "."
   dockerfile = "Dockerfile"
-  tags = ["docker.io/kcandidate/test-image-3:${VERSION}"]
+  tags = ["docker.io/kcandidate/test-image-3:single-${VERSION}"]
   platforms = ["linux/amd64"]
   labels = {
     "org.opencontainers.image.title" = "gha-test multi-target single-arch target 3"
