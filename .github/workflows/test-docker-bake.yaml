@@ -66,6 +66,6 @@ jobs:
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@annotations
     with:
       bake-file: docker-bake.hcl
-      group: secretgroup
+      group: default
       version: ${{ needs.determine-version.outputs.version }}
     secrets: inherit
