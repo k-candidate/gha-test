@@ -36,8 +36,10 @@ jobs:
       fail-on-scan-findings: false
 
   build-images-single-target-multi-arch:
-    if: ${{ github.event_name == 'release' || inputs.test-scope == 'annotations' || inputs.test-scope == 'all' }}
-    needs: determine-version
+    if: ${{ always() && (needs.build-images-multi-target-mixed-arch.result == 'success' || needs.build-images-multi-target-mixed-arch.result == 'skipped') && (github.event_name == 'release' || inputs.test-scope == 'annotations' || inputs.test-scope == 'all') }}
+    needs:
+      - determine-version
+      - build-images-multi-target-mixed-arch
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@scan
     secrets: inherit
     with:
@@ -45,8 +47,10 @@ jobs:
       fail-on-scan-findings: false
 
   build-images-multi-target-single-arch:
-    if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'annotations' }}
-    needs: determine-version
+    if: ${{ always() && (needs.build-images-single-target-multi-arch.result == 'success' || needs.build-images-single-target-multi-arch.result == 'skipped') && (github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'annotations') }}
+    needs:
+      - determine-version
+      - build-images-single-target-multi-arch
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@scan
     with:
       bake-file: docker-bake-multi-target-single-arch.hcl
@@ -56,8 +60,10 @@ jobs:
     secrets: inherit
 
   build-images-single-target-single-arch:
-    if: ${{ github.event_name == 'release' || inputs.test-scope == 'annotations' || inputs.test-scope == 'all' }}
-    needs: determine-version
+    if: ${{ always() && (needs.build-images-multi-target-single-arch.result == 'success' || needs.build-images-multi-target-single-arch.result == 'skipped') && (github.event_name == 'release' || inputs.test-scope == 'annotations' || inputs.test-scope == 'all') }}
+    needs:
+      - determine-version
+      - build-images-multi-target-single-arch
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@scan
     with:
       bake-file: docker-bake-single-target-single-arch.hcl
@@ -66,8 +72,10 @@ jobs:
     secrets: inherit
 
   build-image-with-secrets:
-    if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' }}
-    needs: determine-version
+    if: ${{ always() && (needs.build-images-single-target-single-arch.result == 'success' || needs.build-images-single-target-single-arch.result == 'skipped') && (github.event_name == 'release' || inputs.test-scope == 'all') }}
+    needs:
+      - determine-version
+      - build-images-single-target-single-arch
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@scan
     with:
       bake-file: docker-bake.hcl
@@ -77,8 +85,10 @@ jobs:
     secrets: inherit
 
   scan-clean-image:
-    if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'scan' }}
-    needs: determine-version
+    if: ${{ always() && (needs.build-image-with-secrets.result == 'success' || needs.build-image-with-secrets.result == 'skipped') && (github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'scan') }}
+    needs:
+      - determine-version
+      - build-image-with-secrets
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@scan
     secrets: inherit
     with:
