@@ -89,7 +89,9 @@ jobs:
 
   scan-vuln-image-fail-disabled:
     if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'scan' }}
-    needs: determine-version
+    needs:
+      - determine-version
+      - scan-clean-image
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@scan
     secrets: inherit
     with:
@@ -100,7 +102,9 @@ jobs:
 
   scan-vuln-image-with-ignore:
     if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'scan' }}
-    needs: determine-version
+    needs:
+      - determine-version
+      - scan-vuln-image-fail-disabled
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@scan
     secrets: inherit
     with:
@@ -112,7 +116,9 @@ jobs:
 
   scan-nonexistent-ignorefile:
     if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'scan' }}
-    needs: determine-version
+    needs:
+      - determine-version
+      - scan-vuln-image-with-ignore
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@scan
     secrets: inherit
     with:
@@ -123,7 +129,9 @@ jobs:
       trivyignore-file: does-not-exist.trivyignore
 
   assert-scan-gate-failed:
-    if: ${{ always() && (github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'scan') }}
+    if: ${{ always() && needs.scan-nonexistent-ignorefile.result == 'success' && (github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'scan') }}
+    needs:
+      - scan-nonexistent-ignorefile
     runs-on: ubuntu-latest
     permissions:
       actions: write
