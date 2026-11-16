@@ -4,12 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       test-scope:
-        description: 'Run only the focused annotation scenarios, or every fixture'
+        description: 'Run annotation scenarios, scan scenarios, or every fixture'
         required: false
         type: choice
         options:
           - all
           - annotations
+          - scan
         default: all
   release:
     types: [published]
@@ -27,45 +28,125 @@ jobs:
   build-images-multi-target-mixed-arch:
     if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'annotations' }}
     needs: determine-version
-    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@main
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@scan
     secrets: inherit
     with:
       bake-file: ./testdir/testsubdir/docker-bake-multi-target-mixed-arch.hcl
       version: ${{ needs.determine-version.outputs.version }}
+      fail-on-scan-findings: false
 
   build-images-single-target-multi-arch:
     if: ${{ github.event_name == 'release' || inputs.test-scope == 'annotations' || inputs.test-scope == 'all' }}
     needs: determine-version
-    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@main
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@scan
     secrets: inherit
     with:
       version: ${{ needs.determine-version.outputs.version }}
+      fail-on-scan-findings: false
 
   build-images-multi-target-single-arch:
     if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'annotations' }}
     needs: determine-version
-    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@main
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@scan
     with:
       bake-file: docker-bake-multi-target-single-arch.hcl
       group: somegroup
       version: ${{ needs.determine-version.outputs.version }}
+      fail-on-scan-findings: false
     secrets: inherit
 
   build-images-single-target-single-arch:
     if: ${{ github.event_name == 'release' || inputs.test-scope == 'annotations' || inputs.test-scope == 'all' }}
     needs: determine-version
-    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@main
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@scan
     with:
       bake-file: docker-bake-single-target-single-arch.hcl
       version: ${{ needs.determine-version.outputs.version }}
+      fail-on-scan-findings: false
     secrets: inherit
 
   build-image-with-secrets:
     if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' }}
     needs: determine-version
-    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@main
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@scan
     with:
       bake-file: docker-bake.hcl
       group: secretgroup
       version: ${{ needs.determine-version.outputs.version }}
+      fail-on-scan-findings: false
     secrets: inherit
+
+  scan-clean-image:
+    if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'scan' }}
+    needs: determine-version
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@scan
+    secrets: inherit
+    with:
+      bake-file: docker-bake-scan.hcl
+      group: scan-clean
+      version: ${{ needs.determine-version.outputs.version }}
+      fail-on-scan-findings: true
+
+  scan-vuln-image-fail-disabled:
+    if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'scan' }}
+    needs: determine-version
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@scan
+    secrets: inherit
+    with:
+      bake-file: docker-bake-scan.hcl
+      group: scan-vuln-image-fail-disabled
+      version: ${{ needs.determine-version.outputs.version }}
+      fail-on-scan-findings: false
+
+  scan-vuln-image-with-ignore:
+    if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'scan' }}
+    needs: determine-version
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@scan
+    secrets: inherit
+    with:
+      bake-file: docker-bake-scan.hcl
+      group: scan-vuln-image-with-ignore
+      version: ${{ needs.determine-version.outputs.version }}
+      fail-on-scan-findings: true
+      trivyignore-file: testdir/custom.trivyignore
+
+  scan-vuln-image-fail-enabled:
+    if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'scan' }}
+    needs: determine-version
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@scan
+    secrets: inherit
+    continue-on-error: true
+    with:
+      bake-file: docker-bake-scan.hcl
+      group: scan-vuln-image-fail-enabled
+      version: ${{ needs.determine-version.outputs.version }}
+      fail-on-scan-findings: true
+      trivyignore-file: testdir/empty.trivyignore
+
+  scan-nonexistent-ignorefile:
+    if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'scan' }}
+    needs: determine-version
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@scan
+    secrets: inherit
+    with:
+      bake-file: docker-bake-scan.hcl
+      group: scan-nonexistent-ignorefile
+      version: ${{ needs.determine-version.outputs.version }}
+      fail-on-scan-findings: false
+      trivyignore-file: does-not-exist.trivyignore
+
+  assert-scan-gate-failed:
+    if: ${{ always() && (github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'scan') }}
+    needs:
+      - scan-vuln-image-fail-enabled
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assert findings caused the expected gate failure
+        env:
+          SCAN_JOB_RESULT: ${{ needs.scan-vuln-image-fail-enabled.result }}
+        run: |
+          if [ "$SCAN_JOB_RESULT" != "failure" ]; then
+            echo "::error::Expected the vulnerable image workflow to fail its scan gate; got $SCAN_JOB_RESULT"
+            exit 1
+          fi
+          echo "The vulnerable image failed at the scan gate as expected."
