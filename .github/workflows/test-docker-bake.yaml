@@ -110,19 +110,6 @@ jobs:
       fail-on-scan-findings: true
       trivyignore-file: testdir/custom.trivyignore
 
-  scan-vuln-image-fail-enabled:
-    if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'scan' }}
-    needs: determine-version
-    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@scan
-    secrets: inherit
-    continue-on-error: true
-    with:
-      bake-file: docker-bake-scan.hcl
-      group: scan-vuln-image-fail-enabled
-      version: ${{ needs.determine-version.outputs.version }}
-      fail-on-scan-findings: true
-      trivyignore-file: testdir/empty.trivyignore
-
   scan-nonexistent-ignorefile:
     if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'scan' }}
     needs: determine-version
@@ -137,16 +124,64 @@ jobs:
 
   assert-scan-gate-failed:
     if: ${{ always() && (github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'scan') }}
-    needs:
-      - scan-vuln-image-fail-enabled
     runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
     steps:
-      - name: Assert findings caused the expected gate failure
+      - name: Trigger the expected-failure reusable-workflow run
+        id: dispatch
         env:
-          SCAN_JOB_RESULT: ${{ needs.scan-vuln-image-fail-enabled.result }}
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          GH_SHA: ${{ github.sha }}
         run: |
-          if [ "$SCAN_JOB_RESULT" != "failure" ]; then
-            echo "::error::Expected the vulnerable image workflow to fail its scan gate; got $SCAN_JOB_RESULT"
+          set -euo pipefail
+          DISPATCHED_AT=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          gh workflow run test-scan-gate-expected-failure.yaml \
+            --repo "$GH_REPO" --ref scan
+
+          for attempt in {1..24}; do
+            RUNS=$(gh run list \
+              --repo "$GH_REPO" \
+              --workflow test-scan-gate-expected-failure.yaml \
+              --branch scan \
+              --limit 20 \
+              --json databaseId,createdAt,headSha,event)
+            RUN_ID=$(echo "$RUNS" | jq -r \
+              --arg sha "$GH_SHA" \
+              --arg dispatched_at "$DISPATCHED_AT" \
+              '[.[] | select(.headSha == $sha and .event == "workflow_dispatch" and .createdAt >= $dispatched_at)] | sort_by(.createdAt) | last | .databaseId // empty')
+            if [ -n "$RUN_ID" ]; then
+              echo "run_id=$RUN_ID" >> "$GITHUB_OUTPUT"
+              echo "Watching expected-failure workflow run $RUN_ID"
+              exit 0
+            fi
+            sleep 5
+          done
+
+          echo "::error::Could not find the dispatched expected-failure workflow run"
+          exit 1
+
+      - name: Wait for the expected gate failure
+        id: watch
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_ID: ${{ steps.dispatch.outputs.run_id }}
+        run: gh run watch "$RUN_ID" --repo "$GH_REPO" --exit-status
+
+      - name: Assert findings caused the expected gate failure
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_ID: ${{ steps.dispatch.outputs.run_id }}
+        run: |
+          CONCLUSION=$(gh run view "$RUN_ID" --repo "$GH_REPO" --json conclusion --jq .conclusion)
+          if [ "$CONCLUSION" != "failure" ]; then
+            echo "::error::Expected the vulnerable image workflow to fail its scan gate; got $CONCLUSION"
             exit 1
           fi
           echo "The vulnerable image failed at the scan gate as expected."
