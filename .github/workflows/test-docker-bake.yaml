@@ -27,7 +27,7 @@ jobs:
   build-images-multi-target-mixed-arch:
     if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'annotations' }}
     needs: determine-version
-    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@annotations
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@main
     secrets: inherit
     with:
       bake-file: ./testdir/testsubdir/docker-bake-multi-target-mixed-arch.hcl
@@ -36,7 +36,7 @@ jobs:
   build-images-single-target-multi-arch:
     if: ${{ github.event_name == 'release' || inputs.test-scope == 'annotations' || inputs.test-scope == 'all' }}
     needs: determine-version
-    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@annotations
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@main
     secrets: inherit
     with:
       version: ${{ needs.determine-version.outputs.version }}
@@ -44,7 +44,7 @@ jobs:
   build-images-multi-target-single-arch:
     if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'annotations' }}
     needs: determine-version
-    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@annotations
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@main
     with:
       bake-file: docker-bake-multi-target-single-arch.hcl
       group: somegroup
@@ -54,7 +54,7 @@ jobs:
   build-images-single-target-single-arch:
     if: ${{ github.event_name == 'release' || inputs.test-scope == 'annotations' || inputs.test-scope == 'all' }}
     needs: determine-version
-    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@annotations
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@main
     with:
       bake-file: docker-bake-single-target-single-arch.hcl
       version: ${{ needs.determine-version.outputs.version }}
@@ -63,7 +63,7 @@ jobs:
   build-image-with-secrets:
     if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' }}
     needs: determine-version
-    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@annotations
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@main
     with:
       bake-file: docker-bake.hcl
       group: secretgroup
