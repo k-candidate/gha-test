@@ -10,3 +10,14 @@ jobs:
     steps:
     - run: nproc
     - run: free -h
+
+  test-scan-gate-expected-failure:
+    if: ${{ github.ref == 'refs/heads/scan' }}
+    uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@scan
+    secrets: inherit
+    with:
+      bake-file: docker-bake-scan.hcl
+      group: scan-vuln-image-fail-enabled
+      version: ${{ github.run_number }}
+      fail-on-scan-findings: true
+      trivyignore-file: testdir/empty.trivyignore

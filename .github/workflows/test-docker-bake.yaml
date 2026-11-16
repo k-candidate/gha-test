@@ -138,13 +138,13 @@ jobs:
         run: |
           set -euo pipefail
           DISPATCHED_AT=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
-          gh workflow run test-scan-gate-expected-failure.yaml \
+          gh workflow run test.yaml \
             --repo "$GH_REPO" --ref scan
 
           for attempt in {1..24}; do
             RUNS=$(gh run list \
               --repo "$GH_REPO" \
-              --workflow test-scan-gate-expected-failure.yaml \
+              --workflow test.yaml \
               --branch scan \
               --limit 20 \
               --json databaseId,createdAt,headSha,event)
@@ -160,7 +160,7 @@ jobs:
             sleep 5
           done
 
-          echo "::error::Could not find the dispatched expected-failure workflow run"
+          echo "::error::Could not find the dispatched expected-failure test run"
           exit 1
 
       - name: Wait for the expected gate failure
