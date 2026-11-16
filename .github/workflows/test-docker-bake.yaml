@@ -36,10 +36,8 @@ jobs:
       fail-on-scan-findings: false
 
   build-images-single-target-multi-arch:
-    if: ${{ always() && (needs.build-images-multi-target-mixed-arch.result == 'success' || needs.build-images-multi-target-mixed-arch.result == 'skipped') && (github.event_name == 'release' || inputs.test-scope == 'annotations' || inputs.test-scope == 'all') }}
-    needs:
-      - determine-version
-      - build-images-multi-target-mixed-arch
+    if: ${{ github.event_name == 'release' || inputs.test-scope == 'annotations' || inputs.test-scope == 'all' }}
+    needs: determine-version
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@scan
     secrets: inherit
     with:
@@ -47,10 +45,8 @@ jobs:
       fail-on-scan-findings: false
 
   build-images-multi-target-single-arch:
-    if: ${{ always() && (needs.build-images-single-target-multi-arch.result == 'success' || needs.build-images-single-target-multi-arch.result == 'skipped') && (github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'annotations') }}
-    needs:
-      - determine-version
-      - build-images-single-target-multi-arch
+    if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'annotations' }}
+    needs: determine-version
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@scan
     with:
       bake-file: docker-bake-multi-target-single-arch.hcl
@@ -60,10 +56,8 @@ jobs:
     secrets: inherit
 
   build-images-single-target-single-arch:
-    if: ${{ always() && (needs.build-images-multi-target-single-arch.result == 'success' || needs.build-images-multi-target-single-arch.result == 'skipped') && (github.event_name == 'release' || inputs.test-scope == 'annotations' || inputs.test-scope == 'all') }}
-    needs:
-      - determine-version
-      - build-images-multi-target-single-arch
+    if: ${{ github.event_name == 'release' || inputs.test-scope == 'annotations' || inputs.test-scope == 'all' }}
+    needs: determine-version
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@scan
     with:
       bake-file: docker-bake-single-target-single-arch.hcl
@@ -72,10 +66,8 @@ jobs:
     secrets: inherit
 
   build-image-with-secrets:
-    if: ${{ always() && (needs.build-images-single-target-single-arch.result == 'success' || needs.build-images-single-target-single-arch.result == 'skipped') && (github.event_name == 'release' || inputs.test-scope == 'all') }}
-    needs:
-      - determine-version
-      - build-images-single-target-single-arch
+    if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' }}
+    needs: determine-version
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@scan
     with:
       bake-file: docker-bake.hcl
@@ -85,10 +77,8 @@ jobs:
     secrets: inherit
 
   scan-clean-image:
-    if: ${{ always() && (needs.build-image-with-secrets.result == 'success' || needs.build-image-with-secrets.result == 'skipped') && (github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'scan') }}
-    needs:
-      - determine-version
-      - build-image-with-secrets
+    if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'scan' }}
+    needs: determine-version
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@scan
     secrets: inherit
     with:
@@ -99,9 +89,7 @@ jobs:
 
   scan-vuln-image-fail-disabled:
     if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'scan' }}
-    needs:
-      - determine-version
-      - scan-clean-image
+    needs: determine-version
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@scan
     secrets: inherit
     with:
@@ -112,9 +100,7 @@ jobs:
 
   scan-vuln-image-with-ignore:
     if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'scan' }}
-    needs:
-      - determine-version
-      - scan-vuln-image-fail-disabled
+    needs: determine-version
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@scan
     secrets: inherit
     with:
@@ -126,9 +112,7 @@ jobs:
 
   scan-nonexistent-ignorefile:
     if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'scan' }}
-    needs:
-      - determine-version
-      - scan-vuln-image-with-ignore
+    needs: determine-version
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@scan
     secrets: inherit
     with:
@@ -139,9 +123,7 @@ jobs:
       trivyignore-file: does-not-exist.trivyignore
 
   assert-scan-gate-failed:
-    if: ${{ always() && needs.scan-nonexistent-ignorefile.result == 'success' && (github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'scan') }}
-    needs:
-      - scan-nonexistent-ignorefile
+    if: ${{ always() && (github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'scan') }}
     runs-on: ubuntu-latest
     permissions:
       actions: write
