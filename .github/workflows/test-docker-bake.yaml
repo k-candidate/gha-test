@@ -3,10 +3,14 @@ name: Test Docker Bake
 on:
   workflow_dispatch:
     inputs:
-      version:
-        description: 'Version (auto-filled on release)'
+      test-scope:
+        description: 'Run only the focused annotation scenarios, or every fixture'
         required: false
-        default: ''
+        type: choice
+        options:
+          - all
+          - annotations
+        default: all
   release:
     types: [published]
 
@@ -18,13 +22,10 @@ jobs:
     steps:
       - id: set-version
         run: |
-          if [ "${{ github.event_name }}" = "release" ]; then
-            echo "version=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
-          else
-            echo "version=${{ github.event.inputs.version || 'manually-triggered' }}" >> $GITHUB_OUTPUT
-          fi
+          echo "version=1.0.${{ github.run_number }}" >> $GITHUB_OUTPUT
 
   build-images-multi-target-mixed-arch:
+    if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'annotations' }}
     needs: determine-version
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@main
     secrets: inherit
@@ -33,22 +34,38 @@ jobs:
       version: ${{ needs.determine-version.outputs.version }}
 
   build-images-single-target-multi-arch:
+    if: ${{ github.event_name == 'release' || inputs.test-scope == 'annotations' || inputs.test-scope == 'all' }}
+    needs: determine-version
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@main
     secrets: inherit
+    with:
+      version: ${{ needs.determine-version.outputs.version }}
 
   build-images-multi-target-single-arch:
+    if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' || inputs.test-scope == 'annotations' }}
+    needs: determine-version
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@main
     with:
       bake-file: docker-bake-multi-target-single-arch.hcl
       group: somegroup
+      version: ${{ needs.determine-version.outputs.version }}
     secrets: inherit
 
   build-images-single-target-single-arch:
+    if: ${{ github.event_name == 'release' || inputs.test-scope == 'annotations' || inputs.test-scope == 'all' }}
+    needs: determine-version
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@main
     with:
       bake-file: docker-bake-single-target-single-arch.hcl
+      version: ${{ needs.determine-version.outputs.version }}
     secrets: inherit
 
   build-image-with-secrets:
+    if: ${{ github.event_name == 'release' || inputs.test-scope == 'all' }}
+    needs: determine-version
     uses: k-candidate/gha-workflows/.github/workflows/docker-bake.yaml@main
+    with:
+      bake-file: docker-bake.hcl
+      group: secretgroup
+      version: ${{ needs.determine-version.outputs.version }}
     secrets: inherit
